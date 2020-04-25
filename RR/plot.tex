@@ -1,0 +1,27 @@
+\documentclass{standalone}
+\usepackage{tikz,csvsimple} 
+\begin{document}
+
+\def\jobs{3}.  %% input here the number of jobs in your job-set
+\def\time{20}  %% input here the maximum time for which the plot is to be plotted
+\def\height{1} %% y-scale of the plot, increasing this makes the plot taller
+\def\width{1}  %% x-scale of the plot, increasing this makes the plot longer
+
+\colorlet{color1}[hsb]{red}
+\colorlet{color2}[hsb]{blue}
+\begin{tikzpicture}
+\draw[thick] (0,0) -> coordinate (x axis mid) (\time,0);
+\draw[thick] (0,0) -> coordinate (y axis mid) (0,2*\height);
+\foreach \x in {0,...,\time}
+    \draw (\x,1pt) -- (\x,-3pt) node[anchor=north] {\x};    
+\node[below=0.8cm] at (x axis mid) {Time};
+\node[rotate=90, above=0.8cm] at (y axis mid) {Execution};
+\csvreader[no head]{schedule.csv}{1=\first, 2=\second, 3=\third}%  
+{
+	\pgfmathsetmacro\myvalue{\third}
+	\pgfmathtruncatemacro\lambda{(\myvalue)/(\jobs)*100}
+	\colorlet{my color rgb}[rgb]{color1!\lambda!color2}
+	\fill[fill=my color rgb] (\width*\first, 0) rectangle (\width*\second, \height) node[pos=0.5] {\third};
+}
+\end{tikzpicture}
+\end{document}
